@@ -1,3 +1,4 @@
+#importing sql
 import mysql.connector
 from mysql.connector import Error
 
@@ -21,15 +22,15 @@ sql = 'select * from sales'
 cursor.execute(sql)
 rows = cursor.fetchall()
 
-
-print(rows[0]['seller'])
-
+# User Interface
 print("Which seller would you like to access?")
 for sales_dict in rows:
     print(sales_dict['seller'])
 
+# Asking which seller user wants
 pick_seller = input("Enter your seller name here.")
 
+# Returning sales information based on what user inputted
 if pick_seller == rows[0]['seller']:
     print("Sales Report for", rows[0]['seller'])
     print("Product:", rows[0]['product'])
