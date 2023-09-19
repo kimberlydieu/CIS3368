@@ -16,6 +16,7 @@ def create_con(hostname, username, pwd,dbname):
         print("the error occured at : ", e)
     return connection
 
+# creating connection and fetching data from SQL tables
 conn = create_con('cis3368fall.cplpsxg0kzbu.us-east-1.rds.amazonaws.com','admin','12345678','cis3368')
 cursor = conn.cursor(dictionary = True)
 sql = 'select * from sales'
@@ -30,7 +31,7 @@ for sales_dict in rows:
 # Asking which seller user wants
 pick_seller = input("Enter your seller name here.")
 
-# Returning sales information based on what user inputted
+# Returning sales information based on what seller user inputted
 if pick_seller == rows[0]['seller']:
     print("Sales Report for", rows[0]['seller'])
     print("Product:", rows[0]['product'])
