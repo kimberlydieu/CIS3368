@@ -5,8 +5,6 @@ import mysql.connector
 from mysql.connector import Error
 
 # testing database connection
-import mysql.connector
-from mysql.connector import Error
 
 def create_con(hostname, username, pwd, dbname):
     connection = None
@@ -65,11 +63,10 @@ def get_animals():
     except Exception as e:
         return jsonify({'error': str(e)})
     finally:
-        if 'connection' in locals() and connection.is_connected():
             cursor.close()
             connection.close()
 
-# POST animals in zoo
+# POST/Add animals in zoo
 # post body template example
 # {
 #     "age": "36",
@@ -98,11 +95,27 @@ def add_animal():
     except Exception as e:
         return jsonify({'error': str(e)})
     finally:
-        if 'connection' in locals() and connection.is_connected():
             cursor.close()
             connection.close()
 
+# DELETE Animals in Zoo by ID 
+# http://127.0.0.1:5000/animals/(put animal id number here)
+@app.route('/animals/<int:id>', methods=['DELETE'])
+def delete_animal(id):
+    try:
+        connection = get_db_connection()
+        cursor = connection.cursor()
+        cursor.execute("DELETE FROM zoo WHERE id = %s", (id,))
+        connection.commit()
+        return jsonify({'message': 'Animal deleted'})
 
+    except Exception as e:
+        return jsonify({'error': str(e)})
+    finally:
+            cursor.close()
+            connection.close()
+
+            
 if __name__ == '__main__':
     app.run(debug=True)
 
