@@ -33,7 +33,7 @@ from mysql.connector import Error
 # cursor.close()
 # conn.close()
 
-# connecting and testing CRUD
+# connecting to database
 db = mysql.connector.connect(
     host="cis3368fall.cplpsxg0kzbu.us-east-1.rds.amazonaws.com",
     user="admin",
@@ -43,15 +43,18 @@ db = mysql.connector.connect(
 
 cursor = db.cursor()
 
-
 # CRUD for Floor Table
 
 # Create a floor
 def create_floor(level, name):
-    query = "INSERT INTO floor (level, name) VALUES (%s, %s)"
-    values = (level, name)
-    cursor.execute(query, values)
-    db.commit()
+    try:
+        query = "INSERT INTO floor (level, name) VALUES (%s, %s)"
+        values = (level, name)
+        cursor.execute(query, values)
+        db.commit()
+        print(f"{name} has been created successfully")
+    except mysql.connector.Error as err:
+        print("Could not add floor")
 
 # create_floor(21, "26th Floor")    
     
@@ -67,30 +70,42 @@ def read_floors():
 
 # UPDATE floor 
 def update_floor(id, level, name):
-    query = "UPDATE floor SET level = %s, name = %s WHERE id = %s"
-    values = (level, name, id)
-    cursor.execute(query, values)
-    db.commit()
+    try:
+        query = "UPDATE floor SET level = %s, name = %s WHERE id = %s"
+        values = (level, name, id)
+        cursor.execute(query, values)
+        db.commit()
+        print(f"{name} was updated successfully")
+    except mysql.connector.Error as err:
+        print("Could not update floor")
 
 # update_floor(1, 1, "Ground Floor")
 
 # DELETE a floor
 def delete_floor(floor_id):
-    query = "DELETE FROM floor WHERE id = %s"
-    values = (floor_id,)
-    cursor.execute(query, values)
-    db.commit()
-
-# delete_floor(6)
+    try:
+        query = "DELETE FROM floor WHERE id = %s"
+        values = (floor_id,)
+        cursor.execute(query, values)
+        db.commit()
+        print(f"Floor was deleted successfully")
+    except mysql.connector.Error as err:
+        print("Could not delete floor")
+        
+# delete_floor(7)
     
 # CRUD for Room Table
 
 # CREATE a room
 def create_room(capacity, number, floor_id):
-    query = "INSERT INTO room (capacity, number, floor_id) VALUES (%s, %s, %s)"
-    values = (capacity, number, floor_id)
-    cursor.execute(query, values)
-    db.commit()
+    try:
+        query = "INSERT INTO room (capacity, number, floor_id) VALUES (%s, %s, %s)"
+        values = (capacity, number, floor_id)
+        cursor.execute(query, values)
+        db.commit()
+        print("Room was created successfully")
+    except mysql.connector.Error as err:
+        print("Could not create room")
 
 # create_room(2, 506, 5)  
     
@@ -106,30 +121,42 @@ def read_room():
 
 # UPDATE room
 def update_room(id, capacity, number, floor_id):
-    query = "UPDATE room SET capacity = %s, number = %s, floor_id = %s WHERE id = %s"
-    values = (capacity, number, floor_id, id)
-    cursor.execute(query, values)
-    db.commit()
+    try:
+        query = "UPDATE room SET capacity = %s, number = %s, floor_id = %s WHERE id = %s"
+        values = (capacity, number, floor_id, id)
+        cursor.execute(query, values)
+        db.commit()
+        print(f"Room {number} was updated successfully")
+    except mysql.connector.Error as err:
+        print("Could not update room")
     
-# update_room(1, 3, 101, 1)
+# update_room(28, 3, 506, 5)
 
 # DELETE a room
 def delete_room(id):
-    query = "DELETE FROM room WHERE id = %s"
-    values = (id,)
-    cursor.execute(query, values)
-    db.commit()
+    try:
+        query = "DELETE FROM room WHERE id = %s"
+        values = (id,)
+        cursor.execute(query, values)
+        db.commit()
+        print("Room was deleted successfully")
+    except mysql.connector.Error as err:
+        print("Could not delete room")
 
-# delete_room(27)
+# delete_room(28)
 
 # CRUD for Resident Table
 
 # CREATE a resident
 def create_resident(firstname, lastname, age, room_id):
-    query = "INSERT INTO resident (firstname, lastname, age, room_id) VALUES (%s, %s, %s, %s)"
-    values = (firstname, lastname, age, room_id)
-    cursor.execute(query, values)
-    db.commit()
+    try:
+        query = "INSERT INTO resident (firstname, lastname, age, room_id) VALUES (%s, %s, %s, %s)"
+        values = (firstname, lastname, age, room_id)
+        cursor.execute(query, values)
+        db.commit()
+        print(f"Resident {firstname} {lastname} was created successfully")
+    except mysql.connector.Error as err:
+        print("Could not create resident")
 
 # create_resident('bimbert','pimpert', 69, 25)
     
@@ -145,37 +172,30 @@ def read_resident():
 
 # UPDATE resident
 def update_resident(firstname, lastname, age, room_id):
-    query = "UPDATE resident SET firstname = %s, lastname = %s, age = %s, room_id = %s WHERE id = %s"
-    values = (firstname, lastname, age, room_id)
-    cursor.execute(query, values)
-    db.commit()
+    try:
+        query = "UPDATE resident SET firstname = %s, lastname = %s, age = %s, room_id = %s WHERE id = %s"
+        values = (firstname, lastname, age, room_id)
+        cursor.execute(query, values)
+        db.commit()
+        print(f"Resident {firstname} {lastname} was updated successfully")
+    except mysql.connector.Error as err:
+        print("Could not update resident")
     
-# update_resident('bimbert', 'pimpert', 70, 25, 132)
+# update_resident('Bimbert', 'Pimpert', 70, 133, 1)
 
 # DELETE a resident
 def delete_resident(id):
-    query = "DELETE FROM resident WHERE id = %s"
-    values = (id,)
-    cursor.execute(query, values)
-    db.commit()
+    try:
+        query = "DELETE FROM resident WHERE id = %s"
+        values = (id,)
+        cursor.execute(query, values)
+        db.commit()
+        print("Resident was deleted successfully")
+    except mysql.connector.Error as err:
+        print("Could not delete resident")
 
-delete_resident(132)
+delete_resident(186)
     
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 cursor.close()
 db.close()
