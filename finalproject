@@ -284,7 +284,7 @@ def read_room(number):
     if room:
         return jsonify({'room': room})
     else:
-        return jsonify({'message': 'Room not found'}, 404)
+        return jsonify({'message': 'Room not found'})
 
 # POST room
 @app.route('/room', methods=['POST'])
@@ -321,7 +321,7 @@ def delete_room(number):
         except Exception as e:
             return jsonify({'error': str(e)})
 
-# # UPDATE room by room number
+# UPDATE room by room number
 @app.route('/room/<int:number>', methods=['PUT'])
 def update_room(number):
     if request.method == 'PUT':
@@ -359,16 +359,77 @@ def get_resident():
     except mysql.connector.Error as err:
         return jsonify({'error': str(err)})
 
-# GET room by ID
+# GET resident by ID
 @app.route('/resident/<int:id>', methods=['GET'])
 def read_resident(id):
     cursor.execute("SELECT * FROM resident WHERE id = %s", (id,))
-    room = cursor.fetchone()
-    if room:
-        return jsonify({'room': room})
+    resident = cursor.fetchone()
+    if resident:
+        return jsonify({'resident': resident})
     else:
-        return jsonify({'message': 'Resident not found'}, 404)
+        return jsonify({'message': 'Resident not found'})
 
+# POST resident
+@app.route('/resident', methods=['POST'])
+def create_resident():
+    if request.method == 'POST':
+        try:
+            data = request.get_json()
+            firstname = data['firstname']
+            lastname = data['lastname']
+            age = data['age']
+            room_id = data['room_id']
+
+            cursor = db.cursor()
+            cursor.execute("INSERT INTO resident (firstname, lastname, age, room_id) VALUES (%s, %s, %s, %s)", (firstname, lastname, age, room_id))
+            db.commit()
+
+            return jsonify({'message': f'Resident {firstname} {lastname} created successfully'})
+        except Exception as e:
+            return jsonify({'error': str(e)})
+
+# DELETE resident
+@app.route('/resident/<int:id>', methods=['DELETE'])
+def delete_resident(id):
+    if request.method == 'DELETE':
+        try:
+            cursor = db.cursor()
+            cursor.execute("DELETE FROM resident WHERE id = %s", (id,))
+            db.commit()
+
+            if cursor.rowcount > 0:
+                return jsonify({'message': f'Resident {id} has been deleted successfully'})
+            else:
+                return jsonify({'message': f'Resident {id} not found'})
+
+        except Exception as e:
+            return jsonify({'error': str(e)})
+
+# UPDATE resident by ID
+@app.route('/resident/<int:id>', methods=['PUT'])
+def update_resident(id):
+    if request.method == 'PUT':
+        try:
+            cursor = db.cursor()
+            data = request.json
+            firstname = data.get('firstname')
+            lastname = data.get('lastname')
+            age = data.get('age')
+            room_id = data.get('room_id')
+
+            cursor.execute("SELECT * FROM resident WHERE id = %s", (id,))
+            resident = cursor.fetchone()
+
+            if not resident:
+                return jsonify({'message': f'Resident with id {id} not found'})
+
+            cursor.execute("UPDATE resident SET firstname = %s, lastname = %s, age = %s, room_id = %s WHERE id = %s",
+                           (firstname, lastname, age, room_id, id))
+            db.commit()
+
+            return jsonify({'message': f'Resident {id}, {firstname} {lastname}, has been updated successfully'})
+        except Exception as e:
+            return jsonify({'error': str(e)})
 
 
 
