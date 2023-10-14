@@ -1,0 +1,36 @@
+from flask import Flask
+from flask import jsonify
+from flask import request
+import mysql.connector
+from mysql.connector import Error
+
+# testing database connection
+
+def create_con(hostname, username, pwd, dbname):
+    connection = None
+    try:
+        connection = mysql.connector.connect(
+            host=hostname,
+            user=username,
+            password=pwd,
+            database=dbname
+        )
+        print("Success: Connected to the database")
+    except Error as e:
+        print("Could not connect to database")
+    return connection
+
+conn = create_con('cis3368fall.cplpsxg0kzbu.us-east-1.rds.amazonaws.com', 'admin', '12345678', 'finalproject')
+cursor = conn.cursor(dictionary=True)
+sql = 'SELECT * FROM floor'
+cursor.execute(sql)
+rows = cursor.fetchall()
+
+# test printing data from table
+for row in rows:
+    print(row)
+
+cursor.close()
+conn.close()
+
+
