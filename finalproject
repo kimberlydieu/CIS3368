@@ -43,6 +43,7 @@ db = mysql.connector.connect(
 
 cursor = db.cursor()
 
+# ------------------------------------------------------------------------------------------------------
 # BASIC CRUD OPS
 # CRUD for Floor Table
 
@@ -433,18 +434,23 @@ def update_resident(id):
             return jsonify({'error': str(e)})
         
         
+# Login API
+users = [
+    {"username": "user", "password": "password"},]
 
+@app.route('/login', methods=['POST'])
+def login():
+    data = request.get_json()
+    username = data['username']
+    password = data['password']
 
+    # Check if the provided credentials are in the user database
+    user = next((user for user in users if user['username'] == username), None)
 
-
-
-
-
-
-
-
-
-
+    if user and user['password'] == password:
+        return jsonify({"message": "Login successful"})
+    else:
+        return jsonify({"message": "Login failed"})
 
 
 
