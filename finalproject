@@ -204,6 +204,9 @@ def delete_resident(id):
 
 app = Flask(__name__)
 
+
+# FLOOR API
+# ------------------------------------------------------------------------------------------------------
 # REST API for floor
 # GET floor
 @app.route('/floor', methods=['GET'])
@@ -265,8 +268,8 @@ def update_floor(floor_id):
 
 
 
-# REST API for room
-
+# ROOM API
+# ------------------------------------------------------------------------------------------------------
 # GET room
 @app.route('/room', methods=['GET'])
 def get_room():
@@ -348,8 +351,8 @@ def update_room(number):
             return jsonify({'error': str(e)})
 
 
-# REST API for residents
-
+# RESIDENTS API
+# ------------------------------------------------------------------------------------------------------
 # GET residents
 @app.route('/resident', methods=['GET'])
 def get_resident():
@@ -435,7 +438,7 @@ def update_resident(id):
         
 
 # ------------------------------------------------------------------------------------------------------
-# Login API
+# LOGIN API
 # username and password
 users = {
     "username": "password"
