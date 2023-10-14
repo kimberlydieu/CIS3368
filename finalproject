@@ -262,8 +262,88 @@ def update_floor(floor_id):
         return jsonify({"error": str(e)})
 
 
-#
+# REST API for room
 
+# GET room
+@app.route('/room', methods=['GET'])
+def get_room():
+    try:
+        query = "SELECT * FROM room"
+        cursor.execute(query)
+        floors = cursor.fetchall()
+        return jsonify(floors)
+    except mysql.connector.Error as err:
+        return jsonify({'error': str(err)})
+
+# GET room by ID
+@app.route('/room/<int:id>', methods=['GET'])
+def read_room(id):
+    cursor.execute("SELECT * FROM room WHERE id = %s", (id,))
+    room = cursor.fetchone()
+    if room:
+        return jsonify({'room': room})
+    else:
+        return jsonify({'message': 'Room not found'}, 404)
+
+# POST room
+@app.route('/room', methods=['POST'])
+def create_room():
+    if request.method == 'POST':
+        try:
+            data = request.get_json()
+            capacity = data['capacity']
+            number = data['number']
+            floor_id = data['floor_id']
+
+            cursor = db.cursor()
+            cursor.execute("INSERT INTO room (capacity, number, floor_id) VALUES (%s, %s, %s)", (capacity, number, floor_id))
+            db.commit()
+
+            return jsonify({'message': 'Room created successfully'})
+        except Exception as e:
+            return jsonify({'error': str(e)})
+
+# DELETE room
+@app.route('/room/<int:id>', methods=['DELETE'])
+def delete_room(id):
+    if request.method == 'DELETE':
+        try:
+            cursor = db.cursor()
+            cursor.execute("DELETE FROM room WHERE id = %s", (id,))
+            db.commit()
+
+            if cursor.rowcount > 0:
+                return jsonify({'message': f'Room with ID {id} has been deleted successfully'})
+            else:
+                return jsonify({'message': f'Room with ID {id} not found'})
+
+        except Exception as e:
+            return jsonify({'error': str(e)})
+
+# # UPDATE room
+@app.route('/room/<int:id>', methods=['PUT'])
+def update_room(id):
+    if request.method == 'PUT':
+        try:
+            cursor = db.cursor()
+            data = request.json
+            capacity = data.get('capacity')
+            number = data.get('number')
+            floor_id = data.get('floor_id')
+
+            cursor.execute("SELECT * FROM room WHERE id = %s", (id,))
+            room = cursor.fetchone()
+
+            if not room:
+                return jsonify({'message': f'Room with id {id} not found'})
+
+            cursor.execute("UPDATE room SET capacity = %s, number = %s, floor_id = %s WHERE id = %s",
+                           (capacity, number, floor_id, id))
+            db.commit()
+
+            return jsonify({'message': f'Room with id {id} has been updated successfully'})
+        except Exception as e:
+            return jsonify({'error': str(e)})
 
 
 
