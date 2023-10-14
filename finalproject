@@ -43,6 +43,7 @@ db = mysql.connector.connect(
 
 cursor = db.cursor()
 
+# BASIC CRUD OPS
 # CRUD for Floor Table
 
 # Create a floor
@@ -197,10 +198,10 @@ def delete_resident(id):
 # delete_resident(186)
     
 
-
+# ------------------------------------------------------------------------------------------------------
+# REST APIs for ALL TABLES
 
 app = Flask(__name__)
-
 
 # REST API for floor
 # GET floor
@@ -388,7 +389,7 @@ def create_resident():
         except Exception as e:
             return jsonify({'error': str(e)})
 
-# DELETE resident
+# DELETE resident by ID
 @app.route('/resident/<int:id>', methods=['DELETE'])
 def delete_resident(id):
     if request.method == 'DELETE':
@@ -430,6 +431,9 @@ def update_resident(id):
             return jsonify({'message': f'Resident {id}, {firstname} {lastname}, has been updated successfully'})
         except Exception as e:
             return jsonify({'error': str(e)})
+        
+        
+
 
 
 
