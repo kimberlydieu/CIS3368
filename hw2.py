@@ -115,7 +115,30 @@ def delete_animal(id):
             cursor.close()
             connection.close()
 
+# PUT/Update Animals in Zoo
+@app.route('/animals/<int:id>', methods=['PUT'])
+def update_animal(id):
+    try:
+        connection = get_db_connection()
+        cursor = connection.cursor()
+        data = request.get_json()
+
+        if 'animalname' in data and 'species' in data:
+            cursor.execute("UPDATE zoo SET age = %s, alive = %s, animalname= = %s, class = %s, domain = %s, kingdom = %s, species = %s WHERE id = %s",
+                           (data['age'], data['alive'],data['animalname'],data['class'],data['domain'],data['kingdom'],data['species'], id,))
+            connection.commit()
+            return jsonify({'message': 'Animal updated'})
+        else:
+            return jsonify({'error': 'Animal could not be updated'})
+
+    except Exception as e:
+        return jsonify({'error': str(e)})
+    finally:
+        if 'connection' in locals() and connection.is_connected():
+            cursor.close()
+            connection.close()
             
+
 if __name__ == '__main__':
     app.run(debug=True)
 
