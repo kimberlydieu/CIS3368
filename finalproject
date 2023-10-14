@@ -194,8 +194,102 @@ def delete_resident(id):
     except mysql.connector.Error as err:
         print("Could not delete resident")
 
-delete_resident(186)
+# delete_resident(186)
     
 
+
+
+app = Flask(__name__)
+
+
+# REST API for floor
+# GET floor
+@app.route('/floor', methods=['GET'])
+def get_floors():
+    try:
+        query = "SELECT * FROM floor"
+        cursor.execute(query)
+        floors = cursor.fetchall()
+        return jsonify(floors)
+    except mysql.connector.Error as err:
+        return jsonify({'error': str(err)})
+
+# POST floor
+@app.route('/floor', methods=['POST'])
+def create_floor():
+    try:
+        data = request.get_json()
+        level = data['level']
+        name = data['name']
+        query = "INSERT INTO floor (level, name) VALUES (%s, %s)"
+        values = (level, name)
+        cursor.execute(query, values)
+        db.commit()
+        return jsonify({'message': 'Floor created successfully'})
+    except mysql.connector.Error as err:
+        return jsonify({'error': str(err)})
+
+# DELETE floor
+@app.route("/floor/<int:floor_id>", methods=["DELETE"])
+def delete_floor(floor_id):
+    cursor = db.cursor()
+    try:
+        query = "DELETE FROM floor WHERE id = %s"
+        values = (floor_id,)
+        cursor.execute(query, values)
+        db.commit()
+
+        return jsonify({"message": "Floor deleted successfully"})
+    except Exception as e:
+        return jsonify({"error": str(e)})
+
+# UPDATE floor
+@app.route("/floor/<int:floor_id>", methods=["PUT"])
+def update_floor(floor_id):
+    cursor = db.cursor()
+    try:
+        data = request.get_json()
+        level = data["level"]
+        name = data["name"]
+
+        query = "UPDATE floor SET level = %s, name = %s WHERE id = %s"
+        values = (level, name, floor_id)
+        cursor.execute(query, values)
+        db.commit()
+
+        return jsonify({"message": "Floor updated successfully"})
+    except Exception as e:
+        return jsonify({"error": str(e)})
+
+
+#
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+if __name__ == '__main__':
+    app.run(debug=True)
+    
 cursor.close()
 db.close()
+
+
+
+
+
