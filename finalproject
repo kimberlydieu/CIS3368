@@ -433,10 +433,17 @@ def update_resident(id):
         except Exception as e:
             return jsonify({'error': str(e)})
         
-        
+
+# ------------------------------------------------------------------------------------------------------
+# Login API
+# username and password
+users = {
+    "username": "password"
+}
+
 # Login API
 users = [
-    {"username": "user", "password": "password"},]
+    {"username": "username", "password": "password"},]
 
 @app.route('/login', methods=['POST'])
 def login():
@@ -451,6 +458,7 @@ def login():
         return jsonify({"message": "Login successful"})
     else:
         return jsonify({"message": "Login failed"})
+
 
 
 
