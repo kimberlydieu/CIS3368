@@ -1,0 +1,232 @@
+from flask import Flask, render_template, redirect, url_for, request
+
+app = Flask(__name__, template_folder='templates')
+
+
+# Fake data for floors, rooms, and residents
+floors_data = [
+    {'id': 1, 'level': 1, 'name': 'First Floor'},
+    {'id': 2, 'level': 2, 'name': 'Second Floor'},
+    {'id': 3, 'level': 3, 'name': 'Third Floor'},
+    {'id': 4, 'level': 4, 'name': 'Fourth Floor'},
+    {'id': 5, 'level': 5, 'name': 'Fifth Floor'},
+]
+
+rooms_data = [
+    {'id': 1, 'capacity': 4, 'number': 101, 'floor': 1},
+    {'id': 2, 'capacity': 3, 'number': 102, 'floor': 1},
+    {'id': 3, 'capacity': 2, 'number': 201, 'floor': 2},
+    {'id': 4, 'capacity': 1, 'number': 202, 'floor': 2},
+]
+
+residents_data = [
+    {'id': 1, 'firstname': 'John', 'lastname': 'Doe', 'age': 80, 'room': 1},
+    {'id': 2, 'firstname': 'Jane', 'lastname': 'Smith', 'age': 85, 'room': 1},
+    {'id': 3, 'firstname': 'Bob', 'lastname': 'Johnson', 'age': 80, 'room': 2},
+    {'id': 4, 'firstname': 'Alice', 'lastname': 'Williams', 'age': 85, 'room': 2},
+    {'id': 5, 'firstname': 'Charlie', 'lastname': 'Brown', 'age': 88, 'room': 3},
+    {'id': 6, 'firstname': 'Eva', 'lastname': 'Davis', 'age': 85, 'room': 3},
+    {'id': 7, 'firstname': 'Frank', 'lastname': 'Miller', 'age': 82, 'room': 4},
+    {'id': 8, 'firstname': 'Grace', 'lastname': 'Taylor', 'age': 88, 'room': 4},
+    {'id': 9, 'firstname': 'Harry', 'lastname': 'White', 'age': 80, 'room': 5},
+    {'id': 10, 'firstname': 'Isabel', 'lastname': 'Anderson', 'age': 82, 'room': 5},
+]
+    
+
+# Login page
+@app.route('/')
+def login():
+    return render_template('login.html')
+
+# Home page with options to manage floors, rooms, and residents
+@app.route('/home', methods=['GET', 'POST'])
+def home():
+    if request.method == 'POST':
+        # Check login credentials (for simplicity, checking a hardcoded username and password)
+        if request.form['username'] == 'username' and request.form['password'] == 'password':
+            return render_template('home.html')
+        else:
+            return render_template('login.html', error='Invalid credentials')
+
+    return redirect(url_for('login'))
+
+# Page to manage floors
+@app.route('/floor')
+def manage_floors():
+    return render_template('floor.html', floors=floors_data)
+
+# Page to manage rooms
+@app.route('/room')
+def manage_rooms():
+    return render_template('room.html', rooms=rooms_data)
+
+# Page to manage residents
+@app.route('/resident')
+def manage_residents():
+    return render_template('resident.html', residents=residents_data)
+
+@app.route('/add_floor', methods=['POST'])
+def add_floor():
+    if request.method == 'POST':
+        # Retrieve form data
+        level = int(request.form.get('level'))
+        name = request.form.get('name')
+
+        # Generate a new floor ID (replace with your logic)
+        new_floor_id = len(floors_data) + 1
+
+        # Add the new floor to the data
+        new_floor = {
+            'id': new_floor_id,
+            'level': level,
+            'name': name
+        }
+        floors_data.append(new_floor)
+
+        return redirect(url_for('manage_floors'))
+    
+    
+@app.route('/add_room', methods=['POST'])
+def add_room():
+    if request.method == 'POST':
+        # Retrieve form data
+        capacity = int(request.form.get('capacity'))
+        number = int(request.form.get('number'))
+        floor_id = int(request.form.get('floor'))
+
+        # Generate a new room ID (replace with your logic)
+        new_room_id = len(rooms_data) + 1
+
+        # Add the new room to the data
+        new_room = {
+            'id': new_room_id,
+            'capacity': capacity,
+            'number': number,
+            'floor': floor_id
+        }
+        rooms_data.append(new_room)
+
+        return redirect(url_for('manage_rooms'))
+
+@app.route('/api/edit_room/<int:room_id>', methods=['PUT'])
+def edit_room(room_id):
+    if request.method == 'PUT':
+        # Retrieve form data or JSON data depending on how you send the request
+        data = request.get_json()
+
+        # Find the room to edit
+        room_to_edit = next((room for room in rooms_data if room['id'] == room_id), None)
+
+        if room_to_edit:
+            # Update room data
+            room_to_edit['capacity'] = data.get('capacity', room_to_edit['capacity'])
+            room_to_edit['number'] = data.get('number', room_to_edit['number'])
+            room_to_edit['floor'] = data.get('floor', room_to_edit['floor'])
+
+            return jsonify({'message': 'Room updated successfully'})
+        else:
+            return jsonify({'error': 'Room not found'}), 404
+
+# API endpoint to delete a room
+@app.route('/api/delete_room/<int:room_id>', methods=['DELETE'])
+def delete_room(room_id):
+    room_to_delete = next((room for room in rooms_data if room['id'] == room_id), None)
+
+    if room_to_delete:
+        rooms_data.remove(room_to_delete)
+        return jsonify({'message': 'Room deleted successfully'})
+    else:
+        return jsonify({'error': 'Room not found'}), 404
+
+
+
+@app.route('/add_resident', methods=['POST'])
+def add_resident():
+    if request.method == 'POST':
+        # Retrieve form data
+        first_name = request.form.get('first_name')
+        last_name = request.form.get('last_name')
+        age = int(request.form.get('age'))
+        room = int(request.form.get('room'))
+
+        # Generate a new resident ID (replace with your logic)
+        new_resident_id = len(residents_data) + 1
+
+        # Add the new resident to the data
+        new_resident = {
+            'id': new_resident_id,
+            'firstname': first_name,
+            'lastname': last_name,
+            'age': age,
+            'room': room
+        }
+        residents_data.append(new_resident)
+
+        return redirect(url_for('manage_residents'))
+
+@app.route('/api/edit_resident/<int:resident_id>', methods=['PUT'])
+def edit_resident(resident_id):
+    if request.method == 'PUT':
+        # Retrieve form data or JSON data depending on how you send the request
+        data = request.get_json()
+
+        # Find the resident to edit
+        resident_to_edit = next((resident for resident in residents_data if resident['id'] == resident_id), None)
+
+        if resident_to_edit:
+            # Update resident data
+            resident_to_edit['firstname'] = data.get('firstname', resident_to_edit['firstname'])
+            resident_to_edit['lastname'] = data.get('lastname', resident_to_edit['lastname'])
+            resident_to_edit['age'] = data.get('age', resident_to_edit['age'])
+            resident_to_edit['room'] = data.get('room', resident_to_edit['room'])
+
+            return jsonify({'message': 'Resident updated successfully'})
+        else:
+            return jsonify({'error': 'Resident not found'}), 404
+
+
+# API endpoint to delete a resident
+@app.route('/api/delete_resident/<int:resident_id>', methods=['DELETE'])
+def delete_resident(resident_id):
+    resident_to_delete = next((resident for resident in residents_data if resident['id'] == resident_id), None)
+
+    if resident_to_delete:
+        residents_data.remove(resident_to_delete)
+        return jsonify({'message': 'Resident deleted successfully'})
+    else:
+        return jsonify({'error': 'Resident not found'}), 404
+
+
+@app.route('/api/edit_floor/<int:floor_id>', methods=['PUT'])
+def edit_floor(floor_id):
+    if request.method == 'PUT':
+        # Retrieve form data or JSON data depending on how you send the request
+        data = request.get_json()
+
+        # Find the floor to edit
+        floor_to_edit = next((floor for floor in floors_data if floor['id'] == floor_id), None)
+
+        if floor_to_edit:
+            # Update floor data
+            floor_to_edit['level'] = data.get('level', floor_to_edit['level'])
+            floor_to_edit['name'] = data.get('name', floor_to_edit['name'])
+
+            return jsonify({'message': 'Floor updated successfully'})
+        else:
+            return jsonify({'error': 'Floor not found'}), 404
+
+
+# API endpoint to delete a floor
+@app.route('/api/delete_floor/<int:floor_id>', methods=['DELETE'])
+def delete_floor(floor_id):
+    floor_to_delete = next((floor for floor in floors_data if floor['id'] == floor_id), None)
+
+    if floor_to_delete:
+        floors_data.remove(floor_to_delete)
+        return jsonify({'message': 'Floor deleted successfully'})
+    else:
+        return jsonify({'error': 'Floor not found'}), 404
+
+
+if __name__ == '__main__':
+    app.run(debug=True)

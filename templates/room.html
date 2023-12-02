@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Rooms</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        header {
+            padding: 10px;
+            text-align: center;
+            color: white;
+            font-size: 18px;
+        }
+
+        .container {
+            text-align: center;
+            margin: 20px auto;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        table {
+            width: 80%;
+            margin: 20px auto;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #007BFF;
+            color: white;
+        }
+
+        a {
+            display: inline-block;
+            padding: 10px;
+            margin: 10px;
+            text-decoration: none;
+            color: #007BFF;
+            border: 1px solid #007BFF;
+            border-radius: 5px;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        a:hover {
+            background-color: #0056b3;
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <a href="/">Home</a>
+    </header>
+
+    <div class="container">
+        <h1>Manage Rooms</h1>
+
+        <table>
+            <tr>
+                <th>ID</th>
+                <th>Capacity</th>
+                <th>Number</th>
+                <th>Floor</th>
+            </tr>
+            {% for room in rooms %}
+            <tr>
+                <td>{{ room.id }}</td>
+                <td>{{ room.capacity }}</td>
+                <td>{{ room.number }}</td>
+                <td>{{ room.floor }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+
+        <a href="#">Add Room</a>
+        <a href="#">Edit Room</a>
+        <a href="#">Delete Room</a>
+    </div>
+
+    <h2>Add Room</h2>
+    <form method="post" action="{{ url_for('add_room') }}">
+        <label for="capacity">Capacity:</label>
+        <input type="number" id="capacity" name="capacity" required>
+    
+        <label for="number">Room Number:</label>
+        <input type="number" id="number" name="number" required>
+    
+        <label for="floor">Floor ID:</label>
+        <input type="number" id="floor" name="floor" required>
+    
+        <button type="submit">Add Room</button>
+    </form>
+
+<!-- ... (your existing HTML code) -->
+
+<h2>Edit Room</h2>
+<form onsubmit="editRoom(); return false;">
+    <label for="edit_room_id">Room ID:</label>
+    <input type="number" id="edit_room_id" name="edit_room_id" required>
+
+    <!-- Add additional fields as needed for editing -->
+
+    <button type="submit">Edit Room</button>
+</form>
+
+<h2>Delete Room</h2>
+<form onsubmit="deleteRoom(); return false;">
+    <label for="delete_room_id">Room ID:</label>
+    <input type="number" id="delete_room_id" name="delete_room_id" required>
+
+    <button type="submit">Delete Room</button>
+</form>
+
+<script>
+    function editRoom() {
+
+    }
+
+    function deleteRoom() {
+        const roomId = document.getElementById('delete_room_id').value;
+
+        fetch(`/api/delete_room/${roomId}`, {
+            method: 'DELETE',
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log(data);
+            // Remove the room row from the table
+            const roomRow = document.querySelector(`#room-${roomId}`);
+            if (roomRow) {
+                roomRow.remove();
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    }
+</script>
+</body>
+<br>
+
+</html>
